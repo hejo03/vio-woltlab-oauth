@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data xmlns="https://www.woltlab.com"
+    xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://www.woltlab.com https://www.woltlab.com/XSD/5.5/option.xsd">
+    <import>
+        <categories>
+            <category name="vio_oauth">
+            </category>
+            <category name="vio_oauth_general">
+                <parent>vio_oauth</parent>
+            </category>
+        </categories>
+        <options>
+            <option name="vio_oauth_client_id">
+                <categoryname>vio_oauth_general</categoryname>
+                <title>Client ID</title>
+                <optiontype>text</optiontype>
+                <default></default>
+                <description>Die Client ID für den OAuth-Dienst.</description>
+            </option>
+            <option name="vio_oauth_client_secret">
+                <categoryname>vio_oauth_general</categoryname>
+                <title>Client Secret</title>
+                <optiontype>text</optiontype>
+                <default></default>
+                <description>Das Client Secret für den OAuth-Dienst.</description>
+            </option>
+            <option name="vio_oauth_email_placeholder">
+                <categoryname>vio_oauth_general</categoryname>
+                <title>Email Platzhalter</title>
+                <optiontype>text</optiontype>
+                <default>@example.com</default>
+                <description>Der Platzhalter für die Email Domain.</description>
+            </option>
+        </options>
+    </import>
+</data>

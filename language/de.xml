@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language languagecode="de"
+    xmlns="https://www.woltlab.com"
+    xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://www.woltlab.com https://www.woltlab.com/XSD/5.5/language.xsd">
+    <category name="wcf.acp.option">
+        <item name="wcf.acp.option.category.vio_oauth"><![CDATA[Vio-V OAuth]]></item>
+        <item name="wcf.acp.option.category.vio_oauth_general"><![CDATA[Allgemeine Einstellungen]]></item>
+        <item name="wcf.acp.option.vio_oauth_client_id"><![CDATA[Client-ID]]></item>
+        <item name="wcf.acp.option.vio_oauth_client_secret"><![CDATA[Client-Secret]]></item>
+        <item name="wcf.acp.option.vio_oauth_email_placeholder"><![CDATA[Mail-Placeholder]]></item>
+    </category>
+</language>
