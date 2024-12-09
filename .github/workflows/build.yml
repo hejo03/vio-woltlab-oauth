@@ -1,0 +1,13 @@
+name: build package
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: WoltLab Suite Package Creation
+        uses: KittMedia/action-wsc-package-create@v1
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.event.repository.name }}.tar.gz
+          path: ${{ github.event.repository.name }}.tar.gz
