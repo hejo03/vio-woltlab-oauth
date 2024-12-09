@@ -4,14 +4,21 @@ namespace wcf\page;
 
 use wcf\system\WCF;
 use wcf\data\user\UserExtended;
-use wcf\data\user\UserEditor;
-use wcf\system\exception\UserInputException;
-use wcf\util\PasswordUtil;
+use wcf\data\user\User;
+use wcf\data\user\UserAction;
+use wcf\system\user\group\assignment\UserGroupAssignmentHandler;
+use wcf\system\user\authentication\LoginRedirect;
+use wcf\event\user\authentication\UserLoggedIn;
+use wcf\system\language\LanguageFactory;
+use wcf\system\user\command\CreateRegistrationNotification;
+use wcf\system\event\EventHandler;
+use wcf\util\HeaderUtil;
 
 /**
  * Displays the OAuth Login Page.
  */
-class OAuthCallbackPage extends AbstractPage {
+class OAuthCallbackPage extends AbstractPage
+{
     // /**
     //  * Name des Templates
     //  * @var string
@@ -21,14 +28,18 @@ class OAuthCallbackPage extends AbstractPage {
 
     public $userData;
 
-    private function sendError($mes) {
+    private function sendError($mes): void
+    {
         header('Content-Type: application/json');
         echo json_encode([
             'status' => 'error',
             'message' => $mes
         ]);
+        exit();
     }
-    public function readData() {
+
+    public function readData()
+    {
         parent::readData();
 
         session_start();
@@ -40,23 +51,20 @@ class OAuthCallbackPage extends AbstractPage {
 
         // Überprüfen, ob der Code Verifier und State in der Session vorhanden sind
         if (empty($_SESSION['code_verifier']) || empty($state) || $iss !== 'https://apiv1.vio-v.com') {
-            http_response_code(500);
-            $this->sendError("code_verifier:" . $_SESSION['code_verifier'] . "state:" . $state . "iss;",$iss);
-            exit;
+//            http_response_code(500);
+            $this->sendError("code_verifier:" . $_SESSION['code_verifier'] . "state:" . $state . "iss;", $iss);
         }
 
         // Überprüfen, ob der State übereinstimmt
         if ($state !== $_SESSION['state']) {
-            http_response_code(500);
+//            http_response_code(500);
             $this->sendError("state" . $_SESSION['state']);
-            exit;
         }
 
         // Fehlerbehandlung gemäß RFC 6749
         if ($error !== null) {
             $this->sendError($error);
             // Fehlerbehandlung hier hinzufügen, z.B. loggen oder eine Fehlernachricht anzeigen
-            return;
         }
 
         try {
@@ -67,9 +75,9 @@ class OAuthCallbackPage extends AbstractPage {
                 'code_verifier' => $_SESSION['code_verifier'],
                 'redirect_uri' => 'https://hejo03.de/forum/index.php?oauth-callback',
                 'client_id' => VIO_OAUTH_CLIENT_ID,
-                'client_secret' => VIO_OAUTH_CLIENT_SECRET, 
+                'client_secret' => VIO_OAUTH_CLIENT_SECRET,
             ];
-        
+
             // Sende eine POST-Anfrage zum Token-Endpunkt
             $ch = curl_init('https://apiv1.vio-v.com/api/oauth2/token');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -78,19 +86,18 @@ class OAuthCallbackPage extends AbstractPage {
             curl_setopt($ch, CURLOPT_HTTPHEADER, [
                 'Content-Type: application/x-www-form-urlencoded'
             ]);
-        
+
             $response = curl_exec($ch);
             curl_close($ch);
-        
+
             // Überprüfen, ob die Antwort erfolgreich war
             if ($response === false) {
-                http_response_code(500);
+//                http_response_code(500);
                 $this->sendError("response is false");
-                exit;
             }
-        
+
             $responseData = json_decode($response, true);
-        
+
             // Zugriffstoken und Refresh-Token speichern
             if (isset($responseData['access_token']) && isset($responseData['refresh_token'])) {
                 // Speichern Sie das access_token und refresh_token, z.B. in einer Datenbank oder Session
@@ -98,23 +105,23 @@ class OAuthCallbackPage extends AbstractPage {
                 $_SESSION['refresh_token'] = $responseData['refresh_token'];
 
                 $this->userData = $this->getUserData();
-               
+                $this->loginOrRegisterUser();
+
             } else {
-                http_response_code(500);
+//                http_response_code(500);
                 $this->sendError("access_token not here");
-                exit;
             }
-        
+
         } catch (Exception $e) {
             // Fehlerbehandlung
-            http_response_code(500);
+//            http_response_code(500);
             $this->sendError($e);
-            exit;
         }
-        $this->loginOrRegisterUser();
+
     }
 
-    public function assignVariables() {
+    public function assignVariables()
+    {
         parent::assignVariables();
 
         WCF::getTPL()->assign([
@@ -122,46 +129,127 @@ class OAuthCallbackPage extends AbstractPage {
         ]);
     }
 
-    private function loginOrRegisterUser() {
-        if (!$this->userData) {
-            throw new UserInputException('login');
+    private function loginOrRegisterUser(): void
+    {
+        $userData = $this->userData;
+
+        if (!$userData) {
+//            http_response_code(500);
+            $this->sendError("userData not found");
         }
 
         $userID = $userData['ID'] ?? null;
         $userName = $userData['Name'] ?? null;
 
+
         if (!$userID || !$userName) {
-            throw new UserInputException('login');
+//            http_response_code(500);
+            $this->sendError("userID or userName not found");
         }
 
-        $user = UserExtended::getUserByCustomField('vioID', $userID);
 
-        // echo json_encode($user);
+        $vioUser = UserExtended::getUserByCustomField('vioID', $userID);
 
-        if (!$user) {
-            // Benutzer erstellen
-            $userEditor = UserEditor::create([
-                'username' => $userName,
-                'password' => \wcf\util\PasswordUtil::getRandomPassword(),
-                'email' => strtolower($userName) . VIO_OAUTH_EMAIL_PLACEHOLDER, // Fallback-E-Mail
-                'vioID' => $userID
-            ]);
-            return $userEditor->getDecoratedObject();
+
+//        echo json_encode($vioUser);
+
+
+        //User with vioid found
+        if (!empty($vioUser)) {
+            if (WCF::getUser()->userID) {
+                // This account belongs to an existing user, but we are already logged in.
+                // This can't be handled.
+
+                http_response_code(500);
+                $this->sendError("Fatal Error!");
+            } else {
+                // This account belongs to an existing user, we are not logged in.
+                // Perform the login.
+                $user = User::getUserByUsername($vioUser["username"]);
+                WCF::getSession()->changeUser($user);
+                WCF::getSession()->update();
+                EventHandler::getInstance()->fire(
+                    new UserLoggedIn($user)
+                );
+
+                HeaderUtil::redirect(LoginRedirect::getUrl());
+
+            }
+        } else {
+            if (WCF::getUser()->userID) {
+                // This account does not belong to anyone and we are already logged in.
+                // Thus we want to connect this account.
+
+                http_response_code(500);
+                $this->sendError("Fatal Error! no vio id");
+            } else {
+                // This account does not belong to anyone and we are not logged in.
+                // Thus we want to connect this account to a newly registered user.
+                $langs = LanguageFactory::getInstance()->getDefaultLanguageID();
+
+//                $user = UserEditor::create([
+//                    'username' => $userName,
+//                    'password' => $this->getRandomPassword(16),
+//                    'email' => strtolower($userName) . VIO_OAUTH_EMAIL_PLACEHOLDER, // Fallback-E-Mail
+//                    'vioID' => $userID,
+//                    'languageID' => \reset($langs)
+//                ]);
+
+                $additionalFields['languageID'] = WCF::getLanguage()->languageID;
+
+                $data = [
+                    'data' => \array_merge($additionalFields, [
+                        'username' => $userName,
+                        'email' => strtolower($userName) . VIO_OAUTH_EMAIL_PLACEHOLDER,
+                        'password' => $this->getRandomPassword(16),
+                        'blacklistMatches' => '',
+                        'signatureEnableHtml' => 1,
+                        'vioID' => $userID
+                    ]),
+                    'groups' => [],
+                    'languageIDs' => [$langs],
+//                    'options' => $saveOptions,
+                    'addDefaultGroups' => true,
+                ];
+                echo json_encode($data);
+                $objectAction = new UserAction([], 'create', $data);
+                $result = $objectAction->executeAction();
+                /** @var User $user */
+                $user = $result['returnValues'];
+
+
+
+                WCF::getSession()->changeUser($user);
+
+                UserGroupAssignmentHandler::getInstance()->checkUsers([$user->userID]);
+
+
+                $command = new CreateRegistrationNotification($user);
+                $command();
+
+                EventHandler::getInstance()->fireAction($this, 'saved');
+
+                HeaderUtil::delayedRedirect(
+                    LoginRedirect::getUrl(),
+                    WCF::getLanguage()->getDynamicVariable('wcf.user.register.success', ['user' => $user]),
+                    15,
+                    'success',
+                    true
+                );
+            }
         }
-
-        return $user;
     }
- 
-    private function getUserData() {
+
+    private function getUserData()
+    {
         $access_token = $_SESSION['access_token'] ?? null;
 
         if (!$access_token) {
-            http_response_code(500);
+//            http_response_code(500);
             $this->sendError("access_token nicht gefunden");
-            exit;
         }
 
-        $apiUrl = 'https://apiv1.vio-v.com/api/v3/self'; 
+        $apiUrl = 'https://apiv1.vio-v.com/api/v3/self';
 
         // Initialisiere cURL
         $ch = curl_init();
@@ -177,7 +265,7 @@ class OAuthCallbackPage extends AbstractPage {
         $response = curl_exec($ch);
 
         // Fehlerüberprüfung
-        if(curl_errno($ch)) {
+        if (curl_errno($ch)) {
             echo 'Fehler: ' . curl_error($ch);
             exit;
         }
@@ -191,5 +279,27 @@ class OAuthCallbackPage extends AbstractPage {
         // if (isset($responseData)) {
         return $responseData;
         // }
+    }
+
+    function consoleLog($message): void
+    {
+        // Escape special characters for safe output
+        $message = addslashes($message);
+        echo "<script>console.log('$message');</script>";
+    }
+
+    public static function getRandomPassword($length = 12)
+    {
+        // Calculate the number of random bytes needed for the requested length.
+        // Base64 encoding expands the data by a factor of ~4/3, so adjust accordingly.
+        $requiredBytes = (int)ceil($length * 3 / 4);
+
+        // Generate secure random bytes.
+        $randomBytes = random_bytes($requiredBytes);
+
+        // Encode the bytes in Base64 and trim to the desired length.
+        $password = substr(base64_encode($randomBytes), 0, $length);
+
+        return $password;
     }
 }
