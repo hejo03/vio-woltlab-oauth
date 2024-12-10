@@ -22,4 +22,3 @@ jobs:
           artifacts: "${{ github.event.repository.name }}.tar.gz"
           allowUpdates: true
           removeArtifacts: true
-          commit: true
