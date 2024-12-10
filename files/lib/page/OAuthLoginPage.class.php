@@ -49,7 +49,7 @@ class OAuthLoginPage extends AbstractPage {
         // Baue die OAuth-URL zusammen
         $oauthUrl = 'https://apiv1.vio-v.com/api/oauth2/authorize?' . http_build_query([
             'client_id' => $clientId,
-            'redirect_uri' => $redirectUri,
+            'redirect_uri' => urldecode($redirectUri),
             'response_type' => 'code',
             'scope' => $scopeString,
             'state' => $state,
