@@ -7,6 +7,8 @@
         <item name="wcf.acp.option.category.vio_oauth"><![CDATA[Vio-V OAuth]]></item>
         <item name="wcf.acp.option.category.vio_oauth_general"><![CDATA[Allgemeine Einstellungen]]></item>
         <item name="wcf.acp.option.vio_oauth_client_id"><![CDATA[Client-ID]]></item>
+        <item name="wcf.acp.option.vio_oauth_client_id.description"><![CDATA[Die Redirect URL lautet: /index.php?oauth-callback (eg. https://example.com/index.php?oauth-callback]]></item>
+
         <item name="wcf.acp.option.vio_oauth_client_secret"><![CDATA[Client-Secret]]></item>
         <item name="wcf.acp.option.vio_oauth_email_placeholder"><![CDATA[Mail-Placeholder]]></item>
     </category>
