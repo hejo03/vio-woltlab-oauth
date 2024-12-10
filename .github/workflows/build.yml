@@ -1,5 +1,8 @@
 name: build package
-on: [push]
+on: 
+   push:
+    tags:
+      - '*'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,4 +19,3 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "${{ github.event.repository.name }}.tar.gz"
-          bodyFile: "CHANGELOG.md"
