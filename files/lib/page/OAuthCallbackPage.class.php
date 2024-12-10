@@ -215,10 +215,9 @@ class OAuthCallbackPage extends AbstractPage
                     ]),
                     'groups' => [],
                     'languageIDs' => [$langs],
-//                    'options' => $saveOptions,
                     'addDefaultGroups' => true,
                 ];
-                echo json_encode($data);
+
                 $objectAction = new UserAction([], 'create', $data);
                 $result = $objectAction->executeAction();
                 /** @var User $user */
@@ -226,7 +225,7 @@ class OAuthCallbackPage extends AbstractPage
 
 
                 WCF::getSession()->changeUser($user);
-                WCF::getSession()->update();
+//                WCF::getSession()->update();
 
                 UserGroupAssignmentHandler::getInstance()->checkUsers([$user->userID]);
 
@@ -234,7 +233,11 @@ class OAuthCallbackPage extends AbstractPage
                 $command = new CreateRegistrationNotification($user);
                 $command();
 
-                EventHandler::getInstance()->fireAction($this, 'saved');
+                EventHandler::getInstance()->fire(
+                    new UserLoggedIn($user)
+                );
+//                EventHandler::getInstance()->fireAction($this, 'saved');
+
 
                 HeaderUtil::delayedRedirect(
                     LoginRedirect::getUrl(),
