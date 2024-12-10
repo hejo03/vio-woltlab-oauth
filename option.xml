@@ -15,22 +15,17 @@
                 <categoryname>vio_oauth_general</categoryname>
                 <title>Client ID</title>
                 <optiontype>text</optiontype>
-                <default></default>
-                <description>Die Client ID für den OAuth-Dienst.</description>
             </option>
             <option name="vio_oauth_client_secret">
                 <categoryname>vio_oauth_general</categoryname>
                 <title>Client Secret</title>
                 <optiontype>text</optiontype>
-                <default></default>
-                <description>Das Client Secret für den OAuth-Dienst.</description>
             </option>
             <option name="vio_oauth_email_placeholder">
                 <categoryname>vio_oauth_general</categoryname>
                 <title>Email Platzhalter</title>
                 <optiontype>text</optiontype>
-                <default>@example.com</default>
-                <description>Der Platzhalter für die Email Domain.</description>
+                <defaultvalue>@example.com</defaultvalue>
             </option>
         </options>
     </import>
