@@ -3,18 +3,18 @@
     xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="https://www.woltlab.com https://www.woltlab.com/XSD/5.4/page.xsd">
     <import>
-        <page identifier="com.hejo03.viooauth.OAuthLoginPage">
-            <pageType>system</pageType>
-            <controller>wcf\page\OAuthLoginPage</controller>
-            <name language="de">OAuth Login</name>
-            <name language="en">OAuth Login</name>
-            <content language="en">
-                <title>OAuth Login</title>
-            </content>
-            <content language="de">
-                <title>OAuth Login</title>
-            </content>
-        </page>
+<!--        <page identifier="com.hejo03.viooauth.OAuthLoginPage">-->
+<!--            <pageType>system</pageType>-->
+<!--            <controller>wcf\page\OAuthLoginPage</controller>-->
+<!--            <name language="de">OAuth Login</name>-->
+<!--            <name language="en">OAuth Login</name>-->
+<!--            <content language="en">-->
+<!--                <title>OAuth Login</title>-->
+<!--            </content>-->
+<!--            <content language="de">-->
+<!--                <title>OAuth Login</title>-->
+<!--            </content>-->
+<!--        </page>-->
         <page identifier="com.hejo03.viooauth.OAuthCallbackPage">
             <pageType>system</pageType>
             <controller>wcf\page\OAuthCallbackPage</controller>
