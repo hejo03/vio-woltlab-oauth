@@ -1,8 +1,9 @@
 name: build package
-on: 
-   push:
+on:  
+  push:
     tags:
       - '*'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,11 +11,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Modify package version
-        uses: Mudlet/xmlstarlet-action@master
-        id: xml_replace
-        with:
-          args: ed -L --update "/package/packageinformation/version" -v $GITHUB_REF_NAME "package.xml"
       - name: WoltLab Suite Package Creation
         uses: KittMedia/action-wsc-package-create@v1.1.0
       - uses: actions/upload-artifact@v4
@@ -26,3 +22,4 @@ jobs:
           artifacts: "${{ github.event.repository.name }}.tar.gz"
           allowUpdates: true
           removeArtifacts: true
+          commit: true
