@@ -3,6 +3,7 @@
 namespace wcf\page;
 
 use wcf\system\WCF;
+use wcf\system\request\LinkHandler;
 
 /**
  * Displays the OAuth Login Page.
@@ -41,7 +42,7 @@ class OAuthLoginPage extends AbstractPage {
 
         // Definiere die OAuth-Parameter
         $clientId = VIO_OAUTH_CLIENT_ID;
-        $redirectUri = 'https://hejo03.de/forum/index.php?oauth-callback';
+        $redirectUri = LinkHandler::getInstance()->getControllerLink(self::class);//'https://hejo03.de/forum/index.php?oauth-callback';
         $scopes = ['read.self'];
         $scopeString = implode(' ', $scopes);
         
