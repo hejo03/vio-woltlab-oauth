@@ -23,6 +23,7 @@
         <instruction type="file" />
         <instruction type="language" />
         <instruction type="template" />
+        <instruction type="templateListener" />
         <instruction type="page" />
         <instruction type="option" />
     </instructions>
@@ -33,5 +34,6 @@
         <instruction type="template" />
         <instruction type="page" />
         <instruction type="option" />
+        <instruction type="templateListener" />
 	</instructions>
 </package>

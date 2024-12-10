@@ -12,4 +12,8 @@
         <item name="wcf.acp.option.vio_oauth_email_placeholder"><![CDATA[Mail-Placeholder]]></item>
         <item name="wcf.acp.option.vio_oauth_email_placeholder.description"><![CDATA[Da die Vio API keine E-Mail-Adresse ausgibt, wird eine Platzhalter adresse zur Registrierung genutzt. (eg. username@example.com]]></item>
     </category>
+
+    <category name="wcf.user.3rdparty">
+        <item name="wcf.user.3rdparty.viooauth.login"><![CDATA[Mit Vio-V anmelden]]></item>
+    </category>
 </language>

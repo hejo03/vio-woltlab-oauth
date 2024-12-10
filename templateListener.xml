@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data xmlns="http://www.woltlab.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.woltlab.com http://www.woltlab.com/XSD/templatelistener.xsd">
+	<import>
+		<!-- user -->
+		<templatelistener name="pageHeaderUser3rdpartyButtons">
+			<environment>user</environment>
+			<templatename>pageHeaderUser</templatename>
+			<eventname>3rdpartyButtons</eventname>
+			<templatecode><![CDATA[{include file='__loginVioAuth' application='wcf'}]]></templatecode>
+		</templatelistener>
+		<templatelistener name="login3rdpartyButtons">
+			<environment>user</environment>
+			<templatename>login</templatename>
+			<eventname>3rdpartyButtons</eventname>
+			<templatecode><![CDATA[{include file='__loginVioAuth' application='wcf'}]]></templatecode>
+		</templatelistener>
+		<templatelistener name="thirdPartySsoButtons">
+			<environment>user</environment>
+			<templatename>thirdPartySsoButtons</templatename>
+			<eventname>3rdpartyButtons</eventname>
+			<templatecode><![CDATA[{include file='__loginVioAuth' application='wcf'}]]></templatecode>
+		</templatelistener>
+<!--		<templatelistener name="accountManagement3rdpartyFields">-->
+<!--			<environment>user</environment>-->
+<!--			<templatename>accountManagement</templatename>-->
+<!--			<eventname>3rdpartyFields</eventname>-->
+<!--			<templatecode><![CDATA[{include file='__accountManagementOpenID' application='wcf'}]]></templatecode>-->
+<!--		</templatelistener>-->
+		<!-- /user -->
+	</import>
+</data>

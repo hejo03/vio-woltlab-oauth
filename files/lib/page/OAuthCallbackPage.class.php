@@ -16,6 +16,7 @@ use wcf\system\request\LinkHandler;
 use wcf\util\UserRegistrationUtil;
 use wcf\util\HeaderUtil;
 
+session_start();
 
 /**
  * Displays the OAuth Login Page.
@@ -50,8 +51,6 @@ class OAuthCallbackPage extends AbstractPage
     public function readData()
     {
         parent::readData();
-
-        session_start();
 
         $code = $_GET['code'] ?? null;
         $state = $_GET['state'] ?? null;
