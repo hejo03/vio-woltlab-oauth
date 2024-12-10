@@ -25,3 +25,4 @@ jobs:
         with:
           artifacts: "${{ github.event.repository.name }}.tar.gz"
           allowUpdates: true
+          removeArtifacts: true
