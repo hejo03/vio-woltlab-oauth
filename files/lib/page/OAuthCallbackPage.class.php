@@ -12,7 +12,9 @@ use wcf\event\user\authentication\UserLoggedIn;
 use wcf\system\language\LanguageFactory;
 use wcf\system\user\command\CreateRegistrationNotification;
 use wcf\system\event\EventHandler;
+use wcf\system\request\LinkHandler;
 use wcf\util\HeaderUtil;
+
 
 /**
  * Displays the OAuth Login Page.
@@ -36,6 +38,12 @@ class OAuthCallbackPage extends AbstractPage
             'message' => $mes
         ]);
         exit();
+    }
+
+    private function getRedirectURI(): string
+    {
+        $redirectUri = LinkHandler::getInstance()->getControllerLink(OAuthCallbackPage::class);
+        return $redirectUri;
     }
 
     public function readData()
@@ -73,7 +81,7 @@ class OAuthCallbackPage extends AbstractPage
                 'grant_type' => 'authorization_code',
                 'code' => $code,
                 'code_verifier' => $_SESSION['code_verifier'],
-                'redirect_uri' => 'https://hejo03.de/forum/index.php?oauth-callback',
+                'redirect_uri' => $this->getRedirectURI(),
                 'client_id' => VIO_OAUTH_CLIENT_ID,
                 'client_secret' => VIO_OAUTH_CLIENT_SECRET,
             ];
@@ -112,7 +120,7 @@ class OAuthCallbackPage extends AbstractPage
                 $this->sendError("access_token not here");
             }
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Fehlerbehandlung
 //            http_response_code(500);
             $this->sendError($e);
@@ -216,7 +224,6 @@ class OAuthCallbackPage extends AbstractPage
                 $result = $objectAction->executeAction();
                 /** @var User $user */
                 $user = $result['returnValues'];
-
 
 
                 WCF::getSession()->changeUser($user);

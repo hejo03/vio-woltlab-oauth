@@ -42,7 +42,7 @@ class OAuthLoginPage extends AbstractPage {
 
         // Definiere die OAuth-Parameter
         $clientId = VIO_OAUTH_CLIENT_ID;
-        $redirectUri = LinkHandler::getInstance()->getControllerLink(OAuthCallbackPage::class);//'https://hejo03.de/forum/index.php?oauth-callback';
+        $redirectUri = LinkHandler::getInstance()->getControllerLink(OAuthCallbackPage::class);
         $scopes = ['read.self'];
         $scopeString = implode(' ', $scopes);
         
