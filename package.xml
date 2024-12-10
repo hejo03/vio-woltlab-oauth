@@ -26,4 +26,12 @@
         <instruction type="page" />
         <instruction type="option" />
     </instructions>
+
+	<instructions type="update" fromversion="1.*">
+        <instruction type="file" />
+        <instruction type="language" />
+        <instruction type="template" />
+        <instruction type="page" />
+        <instruction type="option" />
+	</instructions>
 </package>
