@@ -13,6 +13,7 @@ use wcf\system\language\LanguageFactory;
 use wcf\system\user\command\CreateRegistrationNotification;
 use wcf\system\event\EventHandler;
 use wcf\system\request\LinkHandler;
+use wcf\util\UserRegistrationUtil;
 use wcf\util\HeaderUtil;
 
 
@@ -193,16 +194,14 @@ class OAuthCallbackPage extends AbstractPage
             } else {
                 // This account does not belong to anyone and we are not logged in.
                 // Thus we want to connect this account to a newly registered user.
+
+
+                if (User::getUserByUsername($userName)->userID) {
+                    http_response_code(500);
+                    $this->sendError("Diesen Namen gibt es bereits. Bitte kontaktiere einen Administrator.");
+                }
+
                 $langs = LanguageFactory::getInstance()->getDefaultLanguageID();
-
-//                $user = UserEditor::create([
-//                    'username' => $userName,
-//                    'password' => $this->getRandomPassword(16),
-//                    'email' => strtolower($userName) . VIO_OAUTH_EMAIL_PLACEHOLDER, // Fallback-E-Mail
-//                    'vioID' => $userID,
-//                    'languageID' => \reset($langs)
-//                ]);
-
                 $additionalFields['languageID'] = WCF::getLanguage()->languageID;
 
                 $data = [
@@ -227,6 +226,7 @@ class OAuthCallbackPage extends AbstractPage
 
 
                 WCF::getSession()->changeUser($user);
+                WCF::getSession()->update();
 
                 UserGroupAssignmentHandler::getInstance()->checkUsers([$user->userID]);
 
