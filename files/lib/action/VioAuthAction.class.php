@@ -5,6 +5,7 @@ namespace wcf\action;
 use wcf\page\OAuthCallbackPage;
 use wcf\system\request\LinkHandler;
 use wcf\util\HeaderUtil;
+use wcf\system\WCF;
 
 
 final class VioAuthAction extends AbstractAction
@@ -15,19 +16,21 @@ final class VioAuthAction extends AbstractAction
     {
         parent::execute();
 
-        session_start();
+//        session_start();
 
         $codeVerifier = bin2hex(random_bytes(60)); // Code Verifier generieren
         $codeChallenge = rtrim(strtr(base64_encode(hash('sha256', $codeVerifier, true)), '+/', '-_'), '='); // Code Challenge generieren
 
         // Speichere den Code Verifier in der Session
-        $_SESSION['code_verifier'] = $codeVerifier;
+        WCF::getSession()->register('code_verifier', $codeVerifier);
+//        $_SESSION['code_verifier'] = $codeVerifier;
 
 
         // Erstelle den State (wie von TypeScript)
         $state = rtrim(strtr(base64_encode(random_bytes(25)), '+/', '-_'), '=');
 
-        $_SESSION['state'] = $state;
+//        $_SESSION['state'] = $state;
+        WCF::getSession()->register('state', $state);
 
         // Definiere die OAuth-Parameter
         $clientId = VIO_OAUTH_CLIENT_ID;

@@ -16,7 +16,7 @@ use wcf\system\request\LinkHandler;
 use wcf\util\UserRegistrationUtil;
 use wcf\util\HeaderUtil;
 
-session_start();
+//session_start();
 
 /**
  * Displays the OAuth Login Page.
@@ -58,15 +58,18 @@ class OAuthCallbackPage extends AbstractPage
         $error = $_GET['error'] ?? null;
 
         // Überprüfen, ob der Code Verifier und State in der Session vorhanden sind
-        if (empty($_SESSION['code_verifier']) || empty($state) || $iss !== 'https://apiv1.vio-v.com') {
+        $session_code_verifier = WCF::getSession()->getVar('code_verifier') ?? null;
+        $session_state = WCF::getSession()->getVar('state') ?? null;
+
+        if (empty($session_code_verifier) || empty($state) || $iss !== 'https://apiv1.vio-v.com') {
 //            http_response_code(500);
-            $this->sendError("code_verifier:" . $_SESSION['code_verifier'] . "state:" . $state . "iss;", $iss);
+            $this->sendError("code_verifier:" . $session_code_verifier . "state:" . $state . "iss;", $iss);
         }
 
         // Überprüfen, ob der State übereinstimmt
-        if ($state !== $_SESSION['state']) {
+        if ($state !== $session_state) {
 //            http_response_code(500);
-            $this->sendError("state" . $_SESSION['state']);
+            $this->sendError("state" . $state);
         }
 
         // Fehlerbehandlung gemäß RFC 6749
@@ -80,7 +83,7 @@ class OAuthCallbackPage extends AbstractPage
             $params = [
                 'grant_type' => 'authorization_code',
                 'code' => $code,
-                'code_verifier' => $_SESSION['code_verifier'],
+                'code_verifier' => $session_code_verifier,
                 'redirect_uri' => $this->getRedirectURI(),
                 'client_id' => VIO_OAUTH_CLIENT_ID,
                 'client_secret' => VIO_OAUTH_CLIENT_SECRET,
@@ -109,8 +112,10 @@ class OAuthCallbackPage extends AbstractPage
             // Zugriffstoken und Refresh-Token speichern
             if (isset($responseData['access_token']) && isset($responseData['refresh_token'])) {
                 // Speichern Sie das access_token und refresh_token, z.B. in einer Datenbank oder Session
-                $_SESSION['access_token'] = $responseData['access_token'];
-                $_SESSION['refresh_token'] = $responseData['refresh_token'];
+                WCF::getSession()->register('access_token', $responseData['access_token']);
+                WCF::getSession()->register('refresh_token', $responseData['refresh_token']);
+//                $_SESSION['access_token'] = $responseData['access_token'];
+//                $_SESSION['refresh_token'] = $responseData['refresh_token'];
 
                 $this->userData = $this->getUserData();
                 $this->loginOrRegisterUser();
@@ -184,7 +189,7 @@ class OAuthCallbackPage extends AbstractPage
 
             }
         } else {
-            if(!VIO_OAUTH_ALLOW_REGISTER) return;
+            if (!VIO_OAUTH_ALLOW_REGISTER) return;
             if (WCF::getUser()->userID) {
                 // This account does not belong to anyone and we are already logged in.
                 // Thus we want to connect this account.
@@ -252,7 +257,8 @@ class OAuthCallbackPage extends AbstractPage
 
     private function getUserData()
     {
-        $access_token = $_SESSION['access_token'] ?? null;
+        $access_token = WCF::getSession()->getVar('access_token') ?? null;
+//        $access_token = $_SESSION['access_token'] ?? null;
 
         if (!$access_token) {
 //            http_response_code(500);
