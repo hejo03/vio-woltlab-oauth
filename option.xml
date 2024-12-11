@@ -30,7 +30,7 @@
             <option name="vio_oauth_allow_register">
                 <categoryname>vio_oauth_general</categoryname>
                 <title>Registrierung über Vio erlauben</title>
-                <optiontype>bool</optiontype>
+                <optiontype>boolean</optiontype>
                 <defaultvalue>true</defaultvalue>
             </option>
         </options>

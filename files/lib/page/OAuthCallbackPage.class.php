@@ -184,6 +184,7 @@ class OAuthCallbackPage extends AbstractPage
 
             }
         } else {
+            if(!VIO_OAUTH_ALLOW_REGISTER) return;
             if (WCF::getUser()->userID) {
                 // This account does not belong to anyone and we are already logged in.
                 // Thus we want to connect this account.
