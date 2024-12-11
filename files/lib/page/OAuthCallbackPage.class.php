@@ -78,18 +78,6 @@ class OAuthCallbackPage extends AbstractPage
             // Fehlerbehandlung hier hinzufügen, z.B. loggen oder eine Fehlernachricht anzeigen
         }
 
-        $ch = curl_init('https://apiv1.vio-v.com/');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
-
-        if ($response === false) {
-            echo 'cURL error: ' . curl_error($ch);
-        } else {
-            echo 'Connection successful!';
-        }
-        curl_close($ch);
-        exit;
-
         try {
             // Vorbereiten der POST-Daten für den Token-Austausch
             $params = [
@@ -114,7 +102,7 @@ class OAuthCallbackPage extends AbstractPage
             $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
-
+            echo 'Params: ' . print_r($params, true);
             echo 'HTTP Code: ' . $http_code;
             echo 'Response: ' . $response;
 
