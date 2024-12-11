@@ -27,6 +27,12 @@
                 <optiontype>text</optiontype>
                 <defaultvalue>@example.com</defaultvalue>
             </option>
+            <option name="vio_oauth_allow_register">
+                <categoryname>vio_oauth_general</categoryname>
+                <title>Registrierung über Vio erlauben</title>
+                <optiontype>bool</optiontype>
+                <defaultvalue>true</defaultvalue>
+            </option>
         </options>
     </import>
 </data>
