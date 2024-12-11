@@ -102,17 +102,11 @@ class OAuthCallbackPage extends AbstractPage
             $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
-            echo 'Params: ' . print_r($params, true);
-            echo 'HTTP Code: ' . $http_code;
-            echo 'Response: ' . $response;
-
-
             // Überprüfen, ob die Antwort erfolgreich war
-            if ($response === false) {
+            if ($response === false && $http_code !== 200) {
 //                http_response_code(500);
                 $this->sendError("error while fetching token" . curl_error($ch));
             }
-            exit;
 
             $responseData = json_decode($response, true);
 
