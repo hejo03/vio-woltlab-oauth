@@ -35,5 +35,11 @@
 <!--		</templatelistener>-->
 		<!-- /user -->
 	</import>
-
+	<delete>
+		<templatelistener name="oldTemplateListenerName">
+			<environment>user</environment>
+			<templatename>login</templatename>
+			<eventname>newLogin</eventname>
+		</templatelistener>
+	</delete>
 </data>
