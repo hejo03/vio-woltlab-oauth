@@ -25,7 +25,7 @@
 			<environment>user</environment>
 			<templatename>login</templatename>
 			<eventname>newLogin</eventname>
-			<templatecode><![CDATA[{include file='loginOnlyVioAuth'}]]></templatecode>
+			<templatecode><![CDATA[{include file='loginOnlyVioAuth' application='wcf'}]]></templatecode>
 		</templatelistener>
 <!--		<templatelistener name="accountManagement3rdpartyFields">-->
 <!--			<environment>user</environment>-->
@@ -35,11 +35,4 @@
 <!--		</templatelistener>-->
 		<!-- /user -->
 	</import>
-	<delete>
-		<templatelistener name="oldTemplateListenerName">
-			<environment>user</environment>
-			<templatename>login</templatename>
-			<eventname>newLogin</eventname>
-		</templatelistener>
-	</delete>
 </data>
