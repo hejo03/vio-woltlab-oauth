@@ -20,6 +20,13 @@
 			<eventname>3rdpartyButtons</eventname>
 			<templatecode><![CDATA[{include file='__loginVioAuth' application='wcf'}]]></templatecode>
 		</templatelistener>
+
+		<templatelistener name="loginOnlyVioAuth">
+			<environment>user</environment>
+			<templatename>login</templatename>
+			<eventname>newLogin</eventname>
+			<templatecode><![CDATA[{include file='loginOnlyVioAuth'}]]></templatecode>
+		</templatelistener>
 <!--		<templatelistener name="accountManagement3rdpartyFields">-->
 <!--			<environment>user</environment>-->
 <!--			<templatename>accountManagement</templatename>-->
@@ -28,4 +35,5 @@
 <!--		</templatelistener>-->
 		<!-- /user -->
 	</import>
+
 </data>
