@@ -1,0 +1,10 @@
+#loginForm {
+  > dl,
+  > .formSubmit,
+  .authOtherOptionButtons__separator {
+    display: none;
+  }
+  .authOtherOptionButtons {
+    margin: 0;
+  }
+}

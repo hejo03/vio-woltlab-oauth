@@ -26,6 +26,7 @@
         <instruction type="templateListener" />
         <instruction type="page" />
         <instruction type="option" />
+        <instruction type="style" />
     </instructions>
 
 	<instructions type="update" fromversion="1.*">
@@ -35,5 +36,6 @@
         <instruction type="page" />
         <instruction type="option" />
         <instruction type="templateListener" />
+        <instruction type="style" />
 	</instructions>
 </package>
