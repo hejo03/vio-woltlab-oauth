@@ -29,12 +29,12 @@
                 {include file='__customLogin'}
             ]]></templatecode>
 		</templatelistener>
-<!--		<templatelistener name="accountManagement3rdpartyFields">-->
-<!--			<environment>user</environment>-->
-<!--			<templatename>accountManagement</templatename>-->
-<!--			<eventname>3rdpartyFields</eventname>-->
-<!--			<templatecode><![CDATA[{include file='__accountManagementOpenID' application='wcf'}]]></templatecode>-->
-<!--		</templatelistener>-->
+		<templatelistener name="accountManagement3rdpartyFields">
+			<environment>user</environment>
+			<templatename>accountManagement</templatename>
+			<eventname>3rdpartyFields</eventname>
+			<templatecode><![CDATA[{include file='__accountManagementVioAuth' application='wcf'}]]></templatecode>
+		</templatelistener>
 		<!-- /user -->
 	</import>
 </data>

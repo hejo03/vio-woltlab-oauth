@@ -1,5 +1,5 @@
 set PACKAGE_NAME=com.hejo03.viooauth
-set PACKAGE_TYPES=(files templates)
+set PACKAGE_TYPES=(files templates style)
 
 for %%i in %PACKAGE_TYPES% do (
     del .\%%i.tar

@@ -17,5 +17,6 @@
 
     <category name="wcf.user.3rdparty">
         <item name="wcf.user.3rdparty.viooauth.login"><![CDATA[Mit Vio-V anmelden]]></item>
+        <item name="wcf.user.3rdparty.viooauth"><![CDATA[Vio-V OAuth]]></item>
     </category>
 </language>

@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<language languagecode="de"
-    xmlns="https://www.woltlab.com"
-    xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="https://www.woltlab.com https://www.woltlab.com/XSD/5.5/language.xsd">
+<language languagecode="en"
+          xmlns="https://www.woltlab.com"
+          xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="https://www.woltlab.com https://www.woltlab.com/XSD/5.5/language.xsd">
     <category name="wcf.acp.option">
         <item name="wcf.acp.option.category.vio_oauth"><![CDATA[Vio-V OAuth]]></item>
-        <item name="wcf.acp.option.category.vio_oauth_general"><![CDATA[Allgemeine Einstellungen]]></item>
+        <item name="wcf.acp.option.category.vio_oauth_general"><![CDATA[General Settings]]></item>
+        <item name="wcf.acp.option.category.vio_oauth_general.description"><![CDATA[The Redirect URL is: /index.php?oauth-callback/ (e.g., https://example.com/index.php?oauth-callback/). The full URL must be registered in the Vio API (https://apiv1.vio-v.com/).]]></item>
         <item name="wcf.acp.option.vio_oauth_client_id"><![CDATA[Client-ID]]></item>
-        <item name="wcf.acp.option.vio_oauth_client_id.description"><![CDATA[Redirect URL: /index.php?oauth-callback (eg. https://example.com/index.php?oauth-callback]]></item>
         <item name="wcf.acp.option.vio_oauth_client_secret"><![CDATA[Client-Secret]]></item>
-        <item name="wcf.acp.option.vio_oauth_email_placeholder"><![CDATA[Mail-Placeholder]]></item>
+        <item name="wcf.acp.option.vio_oauth_email_placeholder"><![CDATA[Email Placeholder]]></item>
+        <item name="wcf.acp.option.vio_oauth_email_placeholder.description"><![CDATA[Since the Vio API does not provide an email address, a placeholder address is used for registration (e.g., username@example.com).]]></item>
+        <item name="wcf.acp.option.vio_oauth_allow_register"><![CDATA[Allow Registration via Vio]]></item>
+        <item name="wcf.acp.option.vio_oauth_email_placeholder.description"><![CDATA[Allow registration via Vio Auth.]]></item>
+    </category>
+
+    <category name="wcf.user.3rdparty">
+        <item name="wcf.user.3rdparty.viooauth.login"><![CDATA[Login with Vio-V]]></item>
+        <item name="wcf.user.3rdparty.viooauth"><![CDATA[Vio-V OAuth]]></item>
     </category>
 </language>
