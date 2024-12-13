@@ -21,11 +21,13 @@
 			<templatecode><![CDATA[{include file='__loginVioAuth' application='wcf'}]]></templatecode>
 		</templatelistener>
 
-		<templatelistener name="loginOnlyVioAuth">
+		<templatelistener name="customLoginTemplate">
 			<environment>user</environment>
 			<templatename>login</templatename>
-			<eventname>newLogin</eventname>
-			<templatecode><![CDATA[{include file='loginOnlyVioAuth' application='wcf'}]]></templatecode>
+			<eventname>replaceLoginTemplate</eventname>
+			<templatecode><![CDATA[
+                {include file='__customLogin'}
+            ]]></templatecode>
 		</templatelistener>
 <!--		<templatelistener name="accountManagement3rdpartyFields">-->
 <!--			<environment>user</environment>-->
