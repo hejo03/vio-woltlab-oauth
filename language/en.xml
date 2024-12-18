@@ -18,5 +18,6 @@
     <category name="wcf.user.3rdparty">
         <item name="wcf.user.3rdparty.viooauth.login"><![CDATA[Login with Vio-V]]></item>
         <item name="wcf.user.3rdparty.viooauth"><![CDATA[Vio-V OAuth]]></item>
+        <item name="wcf.user.3rdparty.vioAuth.connect.error.inuse"><![CDATA[Vio Account is in Use!]]></item>
     </category>
 </language>

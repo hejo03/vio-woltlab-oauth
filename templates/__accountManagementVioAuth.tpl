@@ -2,13 +2,8 @@
     <dl>
         <dt>{lang}wcf.user.3rdparty.viooauth{/lang}</dt>
         <dd>
-            <a href="{link controller='OpenIDConnectAuth'}{/link}" class="thirdPartyLoginButton openIDConnectLoginButton button">
-                {if OPENID_ICON}
-                    {icon name=OPENID_ICON size=24}
-                {else}
-                    {icon name='link' size=24}
-                {/if}
-
+            <a href="{link controller='VioAuth'}{/link}" class="thirdPartyLoginButton vioAuthConnectLoginButton button">
+                <img src="https://apiv1.vio-v.com/images/favicon.ico" alt="vioicon" style="width: 24px; height: 24px;"/>
                 <span>{lang}wcf.user.3rdparty.viooauth.login{/lang}</span>
             </a>
         </dd>

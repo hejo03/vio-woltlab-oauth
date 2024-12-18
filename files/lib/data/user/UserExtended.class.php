@@ -27,4 +27,26 @@ class UserExtended
         }
         return $row;
     }
+
+    public static function setUserCustomField(int $userID, string $field, $value): void
+    {
+        // Check if the field exists in the user_table
+        $sqlCheck = "SELECT COUNT(*) AS count
+                 FROM wcf" . WCF_N . "_user
+                 WHERE userID = ?";
+        $statementCheck = WCF::getDB()->prepareStatement($sqlCheck);
+        $statementCheck->execute([$userID]);
+        $result = $statementCheck->fetchArray();
+
+        if ($result['count'] > 0) {
+            // Field exists, update it
+            $sqlUpdate = "UPDATE wcf" . WCF_N . "_user
+                      SET " . $field . " = ?
+                      WHERE userID = ?";
+            $statementUpdate = WCF::getDB()->prepareStatement($sqlUpdate);
+            $statementUpdate->execute([$value, $userID]);
+        } else {
+//            throw new \RuntimeException("User with ID $userID does not exist in the user_table.");
+        }
+    }
 }

@@ -2,21 +2,24 @@
 
 namespace wcf\page;
 
+use Exception;
+use wcf\system\exception\SystemException;
 use wcf\system\WCF;
 use wcf\data\user\UserExtended;
 use wcf\data\user\User;
 use wcf\data\user\UserAction;
 use wcf\system\user\group\assignment\UserGroupAssignmentHandler;
-use wcf\system\user\authentication\LoginRedirect;
-use wcf\event\user\authentication\UserLoggedIn;
+use wcf\system\application\ApplicationHandler;
+//use wcf\system\user\authentication\LoginRedirect;
+//use wcf\event\user\authentication\UserLoggedIn;
+use wcf\system\user\authentication\event\UserLoggedIn;
+use wcf\system\exception\NamedUserException;
 use wcf\system\language\LanguageFactory;
-use wcf\system\user\command\CreateRegistrationNotification;
+//use wcf\system\user\command\CreateRegistrationNotification;
 use wcf\system\event\EventHandler;
 use wcf\system\request\LinkHandler;
-use wcf\util\UserRegistrationUtil;
 use wcf\util\HeaderUtil;
 
-//session_start();
 
 /**
  * Displays the OAuth Login Page.
@@ -32,23 +35,19 @@ class OAuthCallbackPage extends AbstractPage
 
     public $userData;
 
-    private function sendError($mes): void
-    {
-        header('Content-Type: application/json');
-        echo json_encode([
-            'status' => 'error',
-            'message' => $mes
-        ]);
-        exit();
-    }
 
+    /**
+     * @throws SystemException
+     */
     private function getRedirectURI(): string
     {
-        $redirectUri = LinkHandler::getInstance()->getControllerLink(OAuthCallbackPage::class);
-        return $redirectUri;
+        return LinkHandler::getInstance()->getControllerLink(OAuthCallbackPage::class);
     }
 
-    public function readData()
+    /**
+     * @throws Exception
+     */
+    public function readData(): void
     {
         parent::readData();
 
@@ -63,18 +62,25 @@ class OAuthCallbackPage extends AbstractPage
 
         if (empty($session_code_verifier) || empty($state) || $iss !== 'https://apiv1.vio-v.com') {
 //            http_response_code(500);
-            $this->sendError("code_verifier:" . $session_code_verifier . "state:" . $state . "iss;", $iss);
+
+            throw new Exception(
+                "Error while reading API Data."
+            );
         }
 
         // Überprüfen, ob der State übereinstimmt
         if ($state !== $session_state) {
 //            http_response_code(500);
-            $this->sendError("state" . $state);
+            throw new Exception(
+                "Error while reading API Data."
+            );
         }
 
         // Fehlerbehandlung gemäß RFC 6749
         if ($error !== null) {
-            $this->sendError($error);
+            throw new Exception(
+                "Error while reading API Data."
+            );
             // Fehlerbehandlung hier hinzufügen, z.B. loggen oder eine Fehlernachricht anzeigen
         }
 
@@ -105,7 +111,9 @@ class OAuthCallbackPage extends AbstractPage
             // Überprüfen, ob die Antwort erfolgreich war
             if ($response === false) {
 //                http_response_code(500);
-                $this->sendError("error while fetching token");
+                throw new Exception(
+                    "error while fetching toke."
+                );
             }
 
             $responseData = json_decode($response, true);
@@ -122,19 +130,22 @@ class OAuthCallbackPage extends AbstractPage
                 $this->loginOrRegisterUser();
 
             } else {
-//                http_response_code(500);
-                $this->sendError("access_token not here");
+                throw new Exception(
+                    "access_token not found."
+                );
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Fehlerbehandlung
-//            http_response_code(500);
-            $this->sendError($e);
+
+            throw new Exception(
+                $e
+            );
         }
 
     }
 
-    public function assignVariables()
+    public function assignVariables(): void
     {
         parent::assignVariables();
 
@@ -143,13 +154,16 @@ class OAuthCallbackPage extends AbstractPage
         ]);
     }
 
+    /**
+     * @throws NamedUserException
+     * @throws SystemException
+     */
     private function loginOrRegisterUser(): void
     {
         $userData = $this->userData;
 
         if (!$userData) {
-//            http_response_code(500);
-            $this->sendError("userData not found");
+            throw new NamedUserException($this->getInUseErrorMessage());
         }
 
         $userID = $userData['ID'] ?? null;
@@ -157,15 +171,12 @@ class OAuthCallbackPage extends AbstractPage
 
 
         if (!$userID || !$userName) {
-//            http_response_code(500);
-            $this->sendError("userID or userName not found");
+            throw new Exception(
+                "userID or userName not found."
+            );
         }
 
-
         $vioUser = UserExtended::getUserByCustomField('vioID', $userID);
-
-
-//        echo json_encode($vioUser);
 
 
         //User with vioid found
@@ -174,8 +185,7 @@ class OAuthCallbackPage extends AbstractPage
                 // This account belongs to an existing user, but we are already logged in.
                 // This can't be handled.
 
-                http_response_code(500);
-                $this->sendError("Fatal Error!");
+                throw new NamedUserException($this->getInUseErrorMessage());
             } else {
                 // This account belongs to an existing user, we are not logged in.
                 // Perform the login.
@@ -186,8 +196,10 @@ class OAuthCallbackPage extends AbstractPage
                     new UserLoggedIn($user)
                 );
 
-                HeaderUtil::redirect(LoginRedirect::getUrl());
-
+                $application = ApplicationHandler::getInstance()->getActiveApplication();
+                $path = $application->getPageURL();
+                HeaderUtil::redirect($path);
+//                HeaderUtil::redirect(LoginRedirect::getUrl());
             }
         } else {
             if (!VIO_OAUTH_ALLOW_REGISTER) return;
@@ -195,16 +207,16 @@ class OAuthCallbackPage extends AbstractPage
                 // This account does not belong to anyone and we are already logged in.
                 // Thus we want to connect this account.
 
-                http_response_code(500);
-                $this->sendError("Fatal Error! no vio id");
+                UserExtended::setUserCustomField(WCF::getUser()->userID, 'vioID', $userID);
             } else {
                 // This account does not belong to anyone and we are not logged in.
                 // Thus we want to connect this account to a newly registered user.
 
-
                 if (User::getUserByUsername($userName)->userID) {
-                    http_response_code(500);
-                    $this->sendError("Diesen Namen gibt es bereits. Bitte kontaktiere einen Administrator.");
+                    throw new Exception(
+                        "Name bereits Registriert. Du kannst dich mit Vio in den Einstellungen verbinden."
+                    );
+
                 }
 
                 $langs = LanguageFactory::getInstance()->getDefaultLanguageID();
@@ -231,24 +243,23 @@ class OAuthCallbackPage extends AbstractPage
 
 
                 WCF::getSession()->changeUser($user);
-//                WCF::getSession()->update();
 
                 UserGroupAssignmentHandler::getInstance()->checkUsers([$user->userID]);
 
 
-                $command = new CreateRegistrationNotification($user);
-                $command();
+//                $command = new CreateRegistrationNotification($user);
+//                $command();
 
                 EventHandler::getInstance()->fire(
                     new UserLoggedIn($user)
                 );
-//                EventHandler::getInstance()->fireAction($this, 'saved');
 
-
+                $application = ApplicationHandler::getInstance()->getActiveApplication();
+                $path = $application->getPageURL();
                 HeaderUtil::delayedRedirect(
-                    LoginRedirect::getUrl(),
+                    $path,
                     WCF::getLanguage()->getDynamicVariable('wcf.user.register.success', ['user' => $user]),
-                    15,
+                    10,
                     'success',
                     true
                 );
@@ -256,14 +267,19 @@ class OAuthCallbackPage extends AbstractPage
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function getUserData()
     {
         $access_token = WCF::getSession()->getVar('access_token') ?? null;
-//        $access_token = $_SESSION['access_token'] ?? null;
+
 
         if (!$access_token) {
 //            http_response_code(500);
-            $this->sendError("access_token nicht gefunden");
+            throw new Exception(
+                "Access token was not found."
+            );
         }
 
         $apiUrl = 'https://apiv1.vio-v.com/api/v3/self';
@@ -281,31 +297,24 @@ class OAuthCallbackPage extends AbstractPage
         // Sende die Anfrage und speichere die Antwort
         $response = curl_exec($ch);
 
-        // Fehlerüberprüfung
-        if (curl_errno($ch)) {
-            echo 'Fehler: ' . curl_error($ch);
-            exit;
-        }
 
         // Schließe die cURL-Session
         curl_close($ch);
 
         // Verarbeite die Antwort (z.B. als JSON)
-        $responseData = json_decode($response, true);
-
         // if (isset($responseData)) {
-        return $responseData;
+        return json_decode($response, true);
         // }
     }
 
-    function consoleLog($message): void
+    protected function getInUseErrorMessage(): string
     {
-        // Escape special characters for safe output
-        $message = addslashes($message);
-        echo "<script>console.log('$message');</script>";
+        return WCF::getLanguage()->getDynamicVariable(
+            "wcf.user.3rdparty.vioAuth.connect.error.inuse"
+        );
     }
 
-    public static function getRandomPassword($length = 12)
+    public static function getRandomPassword($length = 12): string
     {
         // Calculate the number of random bytes needed for the requested length.
         // Base64 encoding expands the data by a factor of ~4/3, so adjust accordingly.
@@ -315,8 +324,6 @@ class OAuthCallbackPage extends AbstractPage
         $randomBytes = random_bytes($requiredBytes);
 
         // Encode the bytes in Base64 and trim to the desired length.
-        $password = substr(base64_encode($randomBytes), 0, $length);
-
-        return $password;
+        return substr(base64_encode($randomBytes), 0, $length);
     }
 }
