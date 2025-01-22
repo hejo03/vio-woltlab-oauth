@@ -7,16 +7,4 @@
    Gehe ins ACP > Konfiguration > Pakete verwalten > Paket installieren & installiere das Packet.
 3. **Konfiguration:**
    Gehe im ACP auf Vio-V OAuth und gebe Client-ID & Client-Secret an.
-4. **Optional:** E-Mail Login entfernen. (nicht sicher)
-```scss
-#loginForm {
-  > dl,
-  > .formSubmit,
-  .authOtherOptionButtons__separator {
-    display: none;
-  }
-  .authOtherOptionButtons {
-    margin: 0;
-  }
-}
-```
+4. **Optional:** Register deaktivieren
